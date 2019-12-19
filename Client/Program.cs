@@ -39,6 +39,7 @@ namespace Client
                 Console.WriteLine(response.ToString());
 
                 clientSocket.Shutdown(SocketShutdown.Both);
+                clientSocket.Close();
             }
         }
     }
