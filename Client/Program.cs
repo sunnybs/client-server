@@ -9,6 +9,7 @@ namespace Client
     {
         private static readonly string _ip = "127.0.0.1";
         private static readonly int _port = 3000;
+        
 
         static void Main(string[] args)
         {
