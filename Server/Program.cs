@@ -19,32 +19,36 @@ namespace Server
 
             listener.Bind(endPoint);
             listener.Listen(10);
-            
+
             while (true)
             {
                 mainThreadState.Reset();
-                listener.BeginAccept(AcceptAsyncCallback, listener);
+                listener.BeginAccept(ListenClient, listener);
                 mainThreadState.WaitOne();
             }
         }
 
-        private static void AcceptAsyncCallback(IAsyncResult state)
+        private static void ListenClient(IAsyncResult state)
         {
+            var client = ((Socket) state.AsyncState).EndAccept(state);
             mainThreadState.Set();
-            var listener = ((Socket) state.AsyncState).EndAccept(state);
-            var buffer = new byte[256];
-            var data = new StringBuilder();
-
-            do
+            
+            while (true)
             {
-                var size = listener.Receive(buffer);
-                data.Append(Encoding.UTF8.GetString(buffer, 0, size));
-            } while (listener.Available > 0);
+                var buffer = new byte[256];
+                var data = new StringBuilder();
+                do
+                {
+                    var size = client.Receive(buffer);
+                    data.Append(Encoding.UTF8.GetString(buffer, 0, size));
+                } while (client.Available > 0);
 
-            Console.WriteLine($"Принято от клиента: {data}");
-            listener.Send(Encoding.UTF8.GetBytes($"Отправлено {DateTime.Now}"));
-            listener.Shutdown(SocketShutdown.Both);
-            listener.Close();
+                Console.WriteLine($"Принято от клиента: {data}");
+                client.Send(Encoding.UTF8.GetBytes($"Отправлено {DateTime.Now}"));
+            }
+
+            //listener.Shutdown(SocketShutdown.Both);
+            //listener.Close();
         }
     }
 }

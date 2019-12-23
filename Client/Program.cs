@@ -37,9 +37,6 @@ namespace Client
                 while (clientSocket.Available > 0);
 
                 Console.WriteLine(response.ToString());
-
-                clientSocket.Shutdown(SocketShutdown.Both);
-                clientSocket.Close();
             }
         }
     }
